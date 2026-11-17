@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opensearch-dashboards
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.io
+    chart: opensearch-dashboards
+    targetRevision: "2.26.0" # Align with your OpenSearch chart version
+    helm:
+      releaseName: opensearch-dashboards
+      valuesObject:
+        # 1. Single replica for minimal resource usage
+        replicaCount: 1
+
+        # 2. Point to the OpenSearch master service created in the previous step
+        opensearchHosts: "https://opensearch-cluster-master:9200"
+
+        # 3. Minimal resource limits for dev/testing
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "512Mi"
+          limits:
+            memory: "512Mi"
+
+        # 4. Accept self-signed certificates from the OpenSearch backend
+        config:
+          opensearch_dashboards.yml:
+            opensearch.ssl.verificationMode: none
+
+  destination:
+    server: https://default.svc
+    namespace: opensearch
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+

@@ -1,0 +1,14 @@
+global:
+  domain: argocd.kyhome.net
+
+configs:
+  params:
+    server.insecure: true
+
+server:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    tls: true
+    #annotations:
+    #  traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd

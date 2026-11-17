@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opensearch
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://opensearch-project.github.io/helm-charts/
+    chart: opensearch
+    targetRevision: "2.28.0" # Replace with your desired chart version
+    helm:
+      releaseName: opensearch
+      valuesObject:
+        # 1. Force single-node mode (overrides the default 3-node cluster)
+        singleNode: true
+        
+        # 2. Required for OpenSearch 2.12+ to initialize the cluster
+        extraEnvs:
+          - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+            value: "KvHawa$123456" # Must meet complexity rules
+
+        # 3. Minimal resource footprint for dev/testing
+        opensearchJavaOpts: "-Xmx512M -Xms512M"
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            memory: "1Gi"
+
+        # 4. Minimal persistent storage (or set enabled: false for ephemeral)
+        persistence:
+          enabled: true
+          size: 10Gi
+
+        # 5. Automatically sets vm.max_map_count=262144 on the host node
+        sysctlInit:
+          enabled: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: opensearch
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+

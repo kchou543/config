@@ -1,0 +1,12 @@
+services:
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    ports:
+      - "10080:80"
+      - "10443:443"
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./letsencrypt-var:/var/lib/letsencrypt
+    #command: revoke --cert-path /etc/letsencrypt/archive/www.kypydiy.xubi.org
+    command: certonly --standalone -d "kypydiy.xubi.org" -d "mail.kypydiy.xubi.org" -d "git.kypydiy.xubi.org" -d "nas.kypydiy.xubi.org" --email kypydiy2027@gmail.com --agree-tos --no-eff-email --non-interactive
