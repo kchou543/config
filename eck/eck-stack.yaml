@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://helm.elastic.co
     chart: eck-stack
-    targetRevision: 0.14.0 # Replace with desired chart version
+    targetRevision: 2.11.1 # Replace with desired chart version
     helm:
       releaseName: eck-test
       valuesObject:
@@ -26,13 +26,13 @@ spec:
                     - name: elasticsearch
                       env:
                         - name: ES_JAVA_OPTS
-                          value: "-Xms512m -Xmx512m"
+                          value: "-Xms1G -Xmx1G"
                       resources:
                         requests:
                           memory: 1Gi
-                          cpu: 250m
+                          cpu: 500m
                         limits:
-                          memory: 1.5Gi
+                          memory: 2Gi
                           cpu: 1000m
               volumeClaimTemplates:
                 - metadata:
@@ -42,7 +42,7 @@ spec:
                       - ReadWriteOnce
                     resources:
                       requests:
-                        storage: 5Gi
+                        storage: 10Gi
         eck-kibana:
           count: 1
           podTemplate:
@@ -52,7 +52,7 @@ spec:
                   resources:
                     requests:
                       memory: 512Mi
-                      cpu: 200m
+                      cpu: 250m
                     limits:
                       memory: 1Gi
                       cpu: 500m
