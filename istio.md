@@ -75,8 +75,8 @@ spec:
 kubectl create namespace istio-ingress
 istioctl install -f ingress.yaml 
 
-6. Add label for your namespace, so that it will be managed by istio
-   kubectl label namespace $NAMESPACE istio.io/dataplane-mode=ambient
+7. Add label for your namespace, so that it will be managed by istio
+kubectl label namespace $NAMESPACE istio.io/dataplane-mode=ambient
  
 8. Create gateway and virtual service for the target service
 ``` yaml
