@@ -109,7 +109,7 @@ spec:
 ```
 
 
-# 9. Create HTTPRote for Grafana and Kiali 
+# 9. Create HTTPRote 
 ``` YAML
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -141,7 +141,7 @@ spec:
     - name: grafana
       port: 3000
 ```
-
+**Note: It shall work for any namespace/service, not limited Grafana and Kiali** 
 
 
 
