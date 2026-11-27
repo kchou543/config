@@ -81,6 +81,33 @@ spec:
       namespaces:
         from: All
 ```
+**if TLS is needed**
+``` bash
+kubectl create secret tls observability-tls   --cert=cert-k3s.local.crt --key=cert-k3s.local.key -n istio-system
+```
+
+``` YAML
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: observability-gateway
+  namespace: istio-system
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: https
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: observability-tls
+    allowedRoutes:
+      namespaces:
+        from: All
+```
+
 
 # 9. Create HTTPRote for Grafana and Kiali 
 ``` YAML
@@ -114,8 +141,6 @@ spec:
     - name: grafana
       port: 3000
 ```
-
-
 
 
 
