@@ -51,7 +51,18 @@ kubectl get crd gateways.gateway.networking.k8s.io &> /dev/null || \
   kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.1/experimental-install.yaml
 ```
 
-6. Install ingressgateway
+6. Install ingressgateway in a separate namespace
+``` bash
+kubectl create namespace istio-ingress
+```
+
+**Why a Separate Namespace is Better**
+
+- Stronger Security Isolation: istio-system houses istiod (the control plane), which holds root secrets and certificate-signing privileges. Keeping the edge-facing gateway out of istio-system limits the blast radius if the gateway is ever compromised.
+- Cleaner Lifecycle & Upgrades: You can upgrade, scale, or restart your ingress gateways independently without touching or risking the core control plane.
+- Better RBAC & Team Ownership: Platform teams can lock down istio-system while giving application or networking teams permissions to manage gateways and TLS certificates in istio-ingress.
+- Multi-Gateway Scaling: It makes it easier to deploy multiple isolated gateways (e.g., istio-ingress-public and istio-ingress-internal) with distinct network policies and load balancers.
+
 ``` yaml
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
@@ -71,9 +82,9 @@ spec:
       istio-ingressgateway:
         injectionTemplate: gateway
 ```
-
-kubectl create namespace istio-ingress
+``` bash
 istioctl install -f ingress.yaml 
+```
 
 7. Add label for your namespace, so that it will be managed by istio
 kubectl label namespace $NAMESPACE istio.io/dataplane-mode=ambient
